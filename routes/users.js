@@ -16,14 +16,16 @@ router.use(methodOverride(function(req, res){
 
 
 router.route('/')
-    //GET all blobs
+    //GET all users
     .get(function(req, res, next) {
-        //retrieve all blobs from Monogo
-        mongoose.model('user').find({}, function (err, blobs) {
+        //retrieve all user from Monogo
+        mongoose.model('user').find({}, function (err, users) {
               if (err) {
                   return console.error(err);
               } else {
-                  res.send("this is test");
+                  res.send(users);
               }     
         });
     });
+
+module.exports = router;
