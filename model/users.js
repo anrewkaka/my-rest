@@ -4,6 +4,7 @@ var blobSchema = new mongoose.Schema({
     first_name : String,
     last_name : String,
     password : String,
+    salt : String,
     token : String,
     created_user : String,
     created_date : Date,

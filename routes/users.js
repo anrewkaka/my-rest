@@ -17,7 +17,7 @@ router.use(methodOverride(function(req, res){
 }))
 
 router.route('/')
-    //GET all users
+/*    //GET all users
     .get(function(req, res, next) {
         //retrieve all user from Monogo
         mongoose.model('user').find({}, function (err, users) {
@@ -28,23 +28,25 @@ router.route('/')
               }     
         });
     })
-
+*/
     //POST user
     .post(function(req, res){
         var userName = req.body.user_name;
         var lastName = req.body.last_name;
         var firstName = req.body.first_name;
         var token = hat();
+        var salt = hat();
 
         //encode password
         var md5sum = crypto.createHash('md5');
-        md5sum.update(token + req.body.password);
+        md5sum.update(salt + req.body.password);
         var password = md5sum.digest('hex');
 
         //insert user to Monogo
         mongoose.model('user').create({
                 user_name : userName,
                 password : password,
+                salt : salt,
                 token : token,
                 last_name : lastName,
                 first_name : firstName,
@@ -120,6 +122,44 @@ router.route('/:id')
                         res.send('delete success');
                     }
                 });
+            }
+        });
+    });
+
+router.route('/login')
+    //get token
+    .post(function(req, res){
+        var loginUserName = req.body.user_name;
+        var loginPassword = req.body.password;
+
+        //insert user to Monogo
+        mongoose.model('user').findOne( { user_name : loginUserName }, function (err, user) {
+            if (err) {
+                return console.error(err);
+            } else {
+                //encode password
+                var md5sum = crypto.createHash('md5');
+                md5sum.update(user.salt + loginPassword);
+                loginPassword = md5sum.digest('hex');
+
+                if (user.password == loginPassword) {
+                    res.format({
+                        json: function(){
+                            res.json({
+                                message : 'this is your access token, please keep it private',
+                                token : user.token
+                            });
+                        }
+                    });
+                } else {
+                    res.format({
+                        json: function(){
+                            res.json({
+                                message: 'Username or Password is not valid.'
+                            });
+                        }
+                    });
+                }
             }
         });
     });
