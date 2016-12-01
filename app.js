@@ -8,6 +8,8 @@ var db = require('./model/db'),
     user = require('./model/users');
 
 var users = require('./routes/users');
+var cars = require('./routes/cars');
+var gpios = require('./routes/gpios');
 
 var app = express();
 
@@ -18,6 +20,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/users', users);
+app.use('/cars', cars);
+app.use('/gpios', gpios);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
